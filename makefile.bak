@@ -1,0 +1,38 @@
+objs = main.o audio.o calfeature.o config.o globe.o hash.o output.o \
+		query.o syslog.o sz.o test.o wav.o
+cm = g++ -g 
+	
+shazam : $(objs)
+	$(cm) -o shazam $(objs)
+
+main.o : main.cpp test.h
+	$(cm) -c main.cpp
+audio.o : audio.cpp audio.h calfeature.h config.h crosstype.h globe.h \
+		hash.h output.h syslog.h wav.h
+	$(cm) -c audio.cpp
+calfeature.o : calfeature.cpp calfeature.h globe.h output.h syslog.h wav.h
+	$(cm) -c calfeature.cpp
+config.o : config.cpp config.h crosstype.h globe.h hash.h output.h syslog.h
+	$(cm) -c config.cpp
+globe.o : globe.cpp globe.h crosstype.h
+	$(cm) -c globe.cpp
+hash.o : hash.cpp hash.h crosstype.h globe.h output.h syslog.h
+	$(cm) -c hash.cpp
+output.o : output.cpp output.h globe.h
+	$(cm) -c output.cpp
+query.o : query.cpp query.h calfeature.h crosstype.h globe.h hash.h \
+		output.h syslog.h
+	$(cm) -c query.cpp
+syslog.o : syslog.cpp syslog.h globe.h
+	$(cm) -c syslog.cpp
+sz.o : sz.cpp sz.h calfeature.h config.h crosstype.h globe.h hash.h query.h
+	$(cm) -c sz.cpp
+test.o : test.cpp test.h audio.h calfeature.h config.h crosstype.h \
+		globe.h hash.h output.h query.h syslog.h sz.h wav.h
+	$(cm) -c test.cpp
+wav.o : wav.cpp wav.h globe.h syslog.h
+	$(cm) -c wav.cpp
+
+.PHONY: clean
+clean :
+	-rm $(objs) 
