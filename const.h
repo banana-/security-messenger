@@ -6,5 +6,9 @@
 
 #define SERV_PORT 2048
 
+//max number of connections the server can deal.
+#define MAXCONN 1024
+//max length of characters to be sent once.
+#define MAXLINE 1024
 
 #endif

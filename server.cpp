@@ -2,20 +2,55 @@
 
 int main()
 {
-	int						listenfd;
-	struct sockaddr_in		serv;
+	int						listenfd, connfd;
+	pid_t					childpid;
+	socklen_t				clilen;
+	struct sockaddr_in		serv, cli;
 
-	listenfd = socket(AF_INET, SOCK_STREAM, 0);
+	if ((listenfd = socket(IPV4, TCP, 0)) < 0) {
+		fprintf(stderr, "%s\n", "socket error.");
+		exit(1);
+	}
 	
 	bzero(&serv, sizeof(serv));
-	serv.sin_family = AF_INET;
+	serv.sin_family = IPV4;
 	serv.sin_addr.s_addr = htonl(INADDR_ANY);
-	servaddr.sin_port  = htons(SERV_PORT);	
+	serv.sin_port  = htons(SERV_PORT);	
+	
+	if (bind(listenfd, (struct sockaddr *)&serv, sizeof(serv)) != 0) {
+		fprintf(stderr, "%s\n", "bind error.");
+		exit(1);
+	}
 
+	if (listen(listenfd, MAXCONN) != 0) {
+		fprintf(stderr, "%s\n", "listen error.");
+		exit(1);
+	}
+
+	for ( ; ;) {
+		clilen = sizeof(cli);
+		connfd = accept(listenfd, (struct sockaddr *) &cli, &clilen);
+		if (-1 == connfd) {
+			fprintf(stderr, "%s\n", "accept error.");
+			exit(1);
+		}
+		
+		if ( (childpid = fork()) < 0) {
+			fprintf(stderr, "%s\n", "fork error.");
+			exit(1);
+		} else if (0 == childpid) {
+			if (-1 == close(listenfd)) {
+				fprintf(stderr, "%s\n", "close error.");
+				exit(1);
+			}
+			str_echo(connfd);
+			exit(0);
+		}
+
+
+	}
 	
 	std::cout << "starting server..." << std::endl;
-	
-		
 
 	return 0;
 }
