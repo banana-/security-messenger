@@ -1,5 +1,15 @@
 #include "common.h"
 
+void sig_chld(int signo) {
+	pid_t		pid;
+	int			stat;
+
+	
+	while( (pid = waitpid(-1, &stat, WNOHANG)) > 0)
+		printf("child %d terminated\n", pid);
+	return;
+}
+
 int main()
 {
 	int						listenfd, connfd;
@@ -26,6 +36,8 @@ int main()
 		fprintf(stderr, "%s\n", "listen error.");
 		exit(1);
 	}
+	
+	signal(SIGCHLD, &sig_chld);
 
 	for ( ; ;) {
 		clilen = sizeof(cli);
@@ -45,12 +57,11 @@ int main()
 			}
 			str_echo(connfd);
 			exit(0);
+		} else {
+			std::cout << "start server successfully." << std::endl;
 		}
-
-
 	}
 	
-	std::cout << "starting server..." << std::endl;
 
 	return 0;
 }

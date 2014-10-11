@@ -101,7 +101,7 @@ void str_cli(FILE *fp, int sockfd)
 			fprintf(stderr, "%s\n", "str_cli: server terminated prematurely");
 			exit(1);
 		}
-		if (fputs(recvline, stdout) == NULL ) {
+		if (fputs(recvline, stdout) == EOF) {
 			fprintf(stderr, "%s\n", "fputs error");
 			exit(1);
 		}
