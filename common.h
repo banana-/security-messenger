@@ -1,6 +1,7 @@
 #ifndef __COMMON_H
 #define __COMMON_H
 
+#include <algorithm>
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netinet/in.h>
@@ -10,6 +11,8 @@
 #include <string.h>
 #include <strings.h>
 #include <sys/socket.h>
+#include <sys/select.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>

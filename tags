@@ -1,0 +1,27 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+IPV4	const.h	4;"	d
+MAXCONN	const.h	10;"	d
+MAXLINE	const.h	12;"	d
+SERV_PORT	const.h	7;"	d
+Sigfunc	common.h	/^typedef void Sigfunc(int);$/;"	t
+TCP	const.h	5;"	d
+__COMMON_H	common.h	2;"	d
+__CONST_H	const.h	2;"	d
+cliobjs	makefile	/^cliobjs = client.o $(commonobjs)$/;"	m
+cm	makefile	/^cm = g++ -g$/;"	m
+commonobjs	makefile	/^commonobjs = wraprw.o common.o$/;"	m
+main	client.cpp	/^int main(int argc, char **argv)$/;"	f
+main	server.cpp	/^int main()$/;"	f
+readline	wraprw.cpp	/^ssize_t readline(int fd, void *vptr, size_t maxlen)$/;"	f
+readn	wraprw.cpp	/^ssize_t readn(int fd, void *vptr, size_t n)$/;"	f
+servobjs	makefile	/^servobjs = server.o $(commonobjs) $/;"	m
+sig_chld	server.cpp	/^void sig_chld(int signo) {$/;"	f
+signal	common.cpp	/^Sigfunc * signal(int signo, Sigfunc *func)$/;"	f
+str_cli	wraprw.cpp	/^void str_cli(FILE *fp, int sockfd) $/;"	f
+str_echo	wraprw.cpp	/^void str_echo(int sockfd)$/;"	f
+writen	wraprw.cpp	/^ssize_t writen(int fd, const void *vptr, size_t n)$/;"	f

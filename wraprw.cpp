@@ -93,17 +93,36 @@ again:
 void str_cli(FILE *fp, int sockfd) 
 {
 	char	sendline[MAXLINE], recvline[MAXLINE];
+	int		maxfdp1;
+	fd_set rset;
 
-	while (fgets(sendline, MAXLINE, fp) != NULL) {
-		writen(sockfd, sendline, strlen(sendline));
-
-		if (readline(sockfd, recvline, MAXLINE) == 0) {
-			fprintf(stderr, "%s\n", "str_cli: server terminated prematurely");
+	FD_ZERO(&rset);
+	for ( ; ; ) {
+		FD_SET(fileno(fp), &rset);
+		FD_SET(sockfd, &rset);
+		maxfdp1 = std::max(fileno(fp), sockfd)+1;
+		
+		if (select(maxfdp1, &rset, NULL, NULL, NULL) < 0) {
+			fprintf(stderr, "%s\n", "str_cli: select erro");
 			exit(1);
 		}
-		if (fputs(recvline, stdout) == EOF) {
-			fprintf(stderr, "%s\n", "fputs error");
-			exit(1);
+
+		if (FD_ISSET(sockfd, &rset)) {
+			if (readline(sockfd, recvline, MAXLINE) <= 0) {
+				fprintf(stderr, "str_cli: server terminated prematurely.");
+				exit(1);
+			}
+			if (fputs(recvline, stdout) == EOF) {
+				fprintf(stderr, "%s\n", "fputs error");
+				exit(1);
+			}
 		}
+
+		if (FD_ISSET(fileno(fp), &rset)) {
+			if(fgets(sendline, MAXLINE, fp) == NULL)
+				return ;
+			writen(sockfd, sendline, strlen(sendline));
+		}
+		
 	}
 }
