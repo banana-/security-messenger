@@ -1,10 +1,10 @@
 #include "common.h"
+#include "wrap.h"
 
 void sig_chld(int signo) {
 	pid_t		pid;
 	int			stat;
 
-	
 	while( (pid = waitpid(-1, &stat, WNOHANG)) > 0)
 		printf("child %d terminated\n", pid);
 	return;
@@ -12,7 +12,12 @@ void sig_chld(int signo) {
 
 int main()
 {
-	int						listenfd, connfd;
+	int						i, maxi, maxfd, listenfd, connfd, sockfd;
+	int						nready, client[FD_SETSIZE];
+	ssize_t					n;
+	fd_set					rset, allset;
+	char					buf[MAXLINE];
+	
 	pid_t					childpid;
 	socklen_t				clilen;
 	struct sockaddr_in		serv, cli;
@@ -37,29 +42,61 @@ int main()
 		exit(1);
 	}
 	
-	signal(SIGCHLD, &sig_chld);
+	//signal(SIGCHLD, &sig_chld);
+	maxfd = listenfd;
+	maxi = -1;
+	for (i = 0; i < FD_SETSIZE; i++)
+		client[i] = -1;
+	FD_ZERO(&allset);
+	FD_SET(listenfd, &allset);
 
 	for ( ; ;) {
-		clilen = sizeof(cli);
-		connfd = accept(listenfd, (struct sockaddr *) &cli, &clilen);
-		if (-1 == connfd) {
-			fprintf(stderr, "%s\n", "accept error.");
-			exit(1);
-		}
+		rset = allset;
+		nready = Select(maxfd+1, &rset, NULL, NULL, NULL);
 		
-		if ( (childpid = fork()) < 0) {
-			fprintf(stderr, "%s\n", "fork error.");
-			exit(1);
-		} else if (0 == childpid) {
-			if (-1 == close(listenfd)) {
-				fprintf(stderr, "%s\n", "close error.");
+		if (FD_ISSET(listenfd, &rset)) {
+			clilen = sizeof(cli);
+			connfd = Accept(listenfd, (struct sockaddr *)&cli, &clilen);
+			std::cout << "accept "<< connfd << std::endl;
+			for (i = 0; i < FD_SETSIZE; i++) {
+				if (client[i] < 0) {
+					client[i] = connfd;
+					break;
+				}
+			}
+
+			if (i == FD_SETSIZE) {
+				fprintf(stderr, "%s\n", "too many clients");
 				exit(1);
 			}
-			str_echo(connfd);
-			exit(0);
-		} else {
-			std::cout << "start server successfully." << std::endl;
+
+			FD_SET(connfd, &allset);
+			if (connfd > maxfd) 
+				maxfd = connfd;
+			if (i > maxi) 
+				maxi = i;
+
+			if (--nready <= 0)
+				continue;
 		}
+
+		for (i = 0; i <= maxi; i++) {
+			if ( (sockfd = client[i]) < 0 ) 
+				continue;
+			if (FD_ISSET(sockfd, &rset)) {
+				if ( (n = Read(sockfd, buf, MAXLINE)) == 0) {
+					Close(sockfd);
+					FD_CLR(sockfd, &allset);
+					client[i] = -1;
+					std::cout << "accept "<< sockfd << std::endl;
+				} else {
+					Writen(sockfd, buf, n);
+				}
+				if (--nready <=0)
+					break;
+			}
+		}
+
 	}
 	
 
