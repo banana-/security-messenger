@@ -20,7 +20,7 @@ int main()
 	
 	pid_t					childpid;
 	socklen_t				clilen;
-	struct sockaddr_in		serv, cli;
+	struct sockaddr_in		serv, cli, peer;
 
 	if ((listenfd = socket(IPV4, TCP, 0)) < 0) {
 		fprintf(stderr, "%s\n", "socket error.");
@@ -57,7 +57,10 @@ int main()
 		if (FD_ISSET(listenfd, &rset)) {
 			clilen = sizeof(cli);
 			connfd = Accept(listenfd, (struct sockaddr *)&cli, &clilen);
-			std::cout << "accept "<< connfd << std::endl;
+			socklen_t len = sizeof(peer);
+			getpeername(connfd, (struct sockaddr *)&peer, &len);
+			char str[INET_ADDRSTRLEN];
+			std::cout << "accept "<< inet_ntop(IPV4, &peer.sin_addr, str, sizeof(str)) << std::endl;
 			for (i = 0; i < FD_SETSIZE; i++) {
 				if (client[i] < 0) {
 					client[i] = connfd;

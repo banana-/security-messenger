@@ -4,12 +4,17 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+Accept	wrap.h	/^int Accept(int listenfd, struct sockaddr *cli, socklen_t *clilen) $/;"	f
+Close	wrap.h	/^void Close(int fd) $/;"	f
 IPV4	const.h	4;"	d
 MAXCONN	const.h	10;"	d
 MAXLINE	const.h	12;"	d
+Read	wrap.h	/^int Read(int sockfd, char *buf, int buf_len) {$/;"	f
 SERV_PORT	const.h	7;"	d
+Select	wrap.h	/^int Select(int maxfd, fd_set *rset, fd_set *wset, fd_set *eset, struct timeval *timeout) $/;"	f
 Sigfunc	common.h	/^typedef void Sigfunc(int);$/;"	t
 TCP	const.h	5;"	d
+Writen	wrap.h	/^void Writen(int fd, char *buf, int len) $/;"	f
 __COMMON_H	common.h	2;"	d
 __CONST_H	const.h	2;"	d
 cliobjs	makefile	/^cliobjs = client.o $(commonobjs)$/;"	m
