@@ -96,16 +96,24 @@ void str_cli(FILE *fp, int sockfd)
 	int		maxfdp1;
 	fd_set rset;
 
+	user_mess um;
+	um.type = LOGIN;
+	user_req ur;
+	
+	std::cout << "name : ";
+	std::cin >> um.mess;
+	std::cout << "pwd : ";
+	std::cin >> um.mess+20;
+	
+	writen(sockfd, &um, sizeof(um));
+
 	FD_ZERO(&rset);
 	for ( ; ; ) {
 		FD_SET(fileno(fp), &rset);
 		FD_SET(sockfd, &rset);
 		maxfdp1 = std::max(fileno(fp), sockfd)+1;
 		
-		if (select(maxfdp1, &rset, NULL, NULL, NULL) < 0) {
-			fprintf(stderr, "%s\n", "str_cli: select erro");
-			exit(1);
-		}
+		select(maxfdp1, &rset, NULL, NULL, NULL);
 
 		if (FD_ISSET(sockfd, &rset)) {
 			if (readline(sockfd, recvline, MAXLINE) <= 0) {

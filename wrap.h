@@ -1,4 +1,23 @@
-#include "common.h"
+#ifndef __WRAP_H
+#define __WRAP_H
+
+#include <algorithm>
+#include <arpa/inet.h>
+#include <errno.h>
+#include <netinet/in.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
+#include <sys/socket.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+#include <iostream>
 
 int Select(int maxfd, fd_set *rset, fd_set *wset, fd_set *eset, struct timeval *timeout) 
 {
@@ -22,7 +41,7 @@ int Accept(int listenfd, struct sockaddr *cli, socklen_t *clilen)
 }
 
 
-int Read(int sockfd, char *buf, int buf_len) {
+int Read(int sockfd, user_mess *buf, int buf_len) {
 	int n = read(sockfd, buf, buf_len);
 	if (n < 0) {
 		fprintf(stderr, "%s\n", "read error.");
@@ -47,3 +66,4 @@ void Writen(int fd, char *buf, int len)
 		exit(1);
 	}
 }
+#endif

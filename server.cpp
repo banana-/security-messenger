@@ -1,6 +1,7 @@
 #include "common.h"
 #include "wrap.h"
 
+
 void sig_chld(int signo) {
 	pid_t		pid;
 	int			stat;
@@ -13,10 +14,10 @@ void sig_chld(int signo) {
 int main()
 {
 	int						i, maxi, maxfd, listenfd, connfd, sockfd;
-	int						nready, client[FD_SETSIZE];
+	int						nready, client[FD_SETSIZE];//FD_SETSIZE是上限值，需要修改内核代码才能修改。
 	ssize_t					n;
 	fd_set					rset, allset;
-	char					buf[MAXLINE];
+	user_mess				buf;
 	
 	pid_t					childpid;
 	socklen_t				clilen;
@@ -61,6 +62,7 @@ int main()
 			getpeername(connfd, (struct sockaddr *)&peer, &len);
 			char str[INET_ADDRSTRLEN];
 			std::cout << "accept "<< inet_ntop(IPV4, &peer.sin_addr, str, sizeof(str)) << std::endl;
+			
 			for (i = 0; i < FD_SETSIZE; i++) {
 				if (client[i] < 0) {
 					client[i] = connfd;
@@ -87,13 +89,22 @@ int main()
 			if ( (sockfd = client[i]) < 0 ) 
 				continue;
 			if (FD_ISSET(sockfd, &rset)) {
-				if ( (n = Read(sockfd, buf, MAXLINE)) == 0) {
+				if ( (n = Read(sockfd, &buf, sizeof(buf))) == 0) {
 					Close(sockfd);
 					FD_CLR(sockfd, &allset);
 					client[i] = -1;
 					std::cout << "accept "<< sockfd << std::endl;
 				} else {
-					Writen(sockfd, buf, n);
+					if(buf.type == LOGIN) {
+						std::cout << "log in" << std::endl;
+						user_req *ur = (user_req *)buf.mess;
+						std::cout << "name: " << ur->name << "\npwd: " << ur->pwd << std::endl;	
+					} else if(buf.type == LOGOUT) {
+						std::cout << "log out" << std::endl;
+					} else {
+						std::cout << "message" << std::endl;
+					}
+					//Writen(sockfd, buf, sizeof(buf));
 				}
 				if (--nready <=0)
 					break;
